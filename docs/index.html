@@ -273,5 +273,16 @@
   </footer>
 
 </div>
+<script>
+  // 自動再生がブロック/中断された環境でも、表示中の動画は必ず動かす
+  const ensurePlay = () =>
+    document.querySelectorAll(".demo video").forEach(v => {
+      if (v.paused) v.play().catch(() => {});
+    });
+  addEventListener("load", ensurePlay);
+  addEventListener("visibilitychange", ensurePlay);
+  addEventListener("click", ensurePlay);
+  addEventListener("scroll", ensurePlay, { passive: true, once: true });
+</script>
 </body>
 </html>
