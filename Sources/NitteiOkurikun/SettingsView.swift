@@ -56,7 +56,9 @@ struct SettingsView: View {
                 VStack(alignment: .leading, spacing: 8) {
                     Text("使い方").font(.system(size: 12, weight: .bold))
                         .foregroundStyle(Theme.inkFaint)
-                    step("1", "メールやチャットの入力欄で \(model.hotKeyDisplay) を押す")
+                    step("1", model.hotKeyDisplay.hasSuffix("N")
+                         ? "メールやチャットの入力欄で \(model.hotKeyDisplay) を押す（Nは日程のN）"
+                         : "メールやチャットの入力欄で \(model.hotKeyDisplay) を押す")
                     step("2", "日付 → 開始 → 終了の順にクリック（複数日OK）")
                     step("3", "「コピーする」で元のアプリにそのまま貼り付け")
                 }
