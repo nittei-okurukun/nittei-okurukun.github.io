@@ -5,7 +5,7 @@ set -e
 cd "$(dirname "$0")/.."
 
 ./build.sh
-ZIP="dist/nittei-okurikun.zip"
+ZIP="dist/nittei-okurukun.zip"
 rm -f "$ZIP"
 ditto -c -k --keepParent "dist/日程送るくん.app" "$ZIP"
 echo "作成完了: $ZIP（GitHub Releases にアップロードしてください）"

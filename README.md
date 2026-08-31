@@ -21,7 +21,7 @@ UIUX の参考: https://shirasaka.tv/ikano/
 ## 使い方
 
 1. メールやSlackなどのテキスト入力欄にカーソルを置いてホットキー（⌃⌘N。Nは日程 = Nittei のN）
-2. カレンダーで日付をクリック（開いた日の月が自動表示）
+2. カレンダーで日付をクリック（今日の週から4週間・日曜始まりで表示。過去日は選択不可）
 3. 時間チップで「開始」→「終了」の順にクリックで1枠追加（複数日・複数枠OK）
 4. **コピーする** を押すと、クリップボードにコピーされ、元のアプリに自動で貼り付く
 
@@ -60,7 +60,7 @@ open /Applications/日程送るくん.app
 ```
 
 ad-hoc 署名のため、リビルドするたびにアクセシビリティの再許可が必要です:
-`tccutil reset Accessibility jp.teamx.nittei-okurukun` → アプリ再起動 → 再許可。
+`tccutil reset Accessibility jp.teamx.nittei-okurikun` → アプリ再起動 → 再許可。
 
 ### アプリアイコンの差し替え
 

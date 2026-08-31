@@ -74,35 +74,17 @@ struct Card<Content: View>: View {
 struct CalendarCard: View {
     @ObservedObject var model: ScheduleModel
 
-    private var monthTitle: String {
-        let c = model.calendar.dateComponents([.year, .month], from: model.displayedMonth)
-        return "\(c.year!)年\(c.month!)月"
-    }
-
-    /// 表示月の日付を「週頭の空セル(nil)＋各日」で並べたもの
-    private var cells: [Date?] {
-        let cal = model.calendar
-        let first = model.displayedMonth
-        let weekday = cal.component(.weekday, from: first) - 1 // 日曜=0
-        let days = cal.range(of: .day, in: .month, for: first)!.count
-        var result: [Date?] = Array(repeating: nil, count: weekday)
-        for day in 0..<days {
-            result.append(cal.date(byAdding: .day, value: day, to: first)!)
-        }
-        return result
-    }
-
     var body: some View {
         Card {
             VStack(spacing: 10) {
                 HStack {
-                    NavButton(symbol: "chevron.left") { model.moveMonth(by: -1) }
+                    NavButton(symbol: "chevron.left") { model.moveWeeks(by: -1) }
                     Spacer()
-                    Text(monthTitle)
+                    Text(model.rangeTitle)
                         .font(.system(size: 15, weight: .bold))
                         .foregroundStyle(Theme.ink)
                     Spacer()
-                    NavButton(symbol: "chevron.right") { model.moveMonth(by: 1) }
+                    NavButton(symbol: "chevron.right") { model.moveWeeks(by: 1) }
                 }
                 let columns = Array(repeating: GridItem(.flexible(), spacing: 2), count: 7)
                 LazyVGrid(columns: columns, spacing: 4) {
@@ -111,12 +93,8 @@ struct CalendarCard: View {
                             .font(.system(size: 11, weight: .medium))
                             .foregroundStyle(weekdayColor(i))
                     }
-                    ForEach(Array(cells.enumerated()), id: \.offset) { _, date in
-                        if let date {
-                            DayCell(model: model, date: date)
-                        } else {
-                            Color.clear.frame(height: 30)
-                        }
+                    ForEach(model.visibleDates, id: \.self) { date in
+                        DayCell(model: model, date: date)
                     }
                 }
             }
@@ -149,12 +127,22 @@ struct DayCell: View {
 
     private var isActive: Bool { model.activeDate == date }
     private var isToday: Bool { model.calendar.isDateInToday(date) }
+    private var isPast: Bool { model.isPast(date) }
     private var weekdayIndex: Int { model.calendar.component(.weekday, from: date) - 1 }
+
+    /// 月の1日と表示範囲の先頭は「9/1」のように月も出す
+    private var label: String {
+        let day = model.calendar.component(.day, from: date)
+        if day == 1 || date == model.weekStart {
+            return "\(model.calendar.component(.month, from: date))/\(day)"
+        }
+        return "\(day)"
+    }
 
     var body: some View {
         Button { model.selectDate(date) } label: {
             VStack(spacing: 1) {
-                Text("\(model.calendar.component(.day, from: date))")
+                Text(label)
                     .font(.system(size: 12, weight: isActive || isToday ? .bold : .regular))
                     .monospacedDigit()
                     .foregroundStyle(textColor)
@@ -176,10 +164,13 @@ struct DayCell: View {
             .contentShape(Rectangle())
         }
         .buttonStyle(.plain)
+        .disabled(isPast)
+        .opacity(isPast ? 0.3 : 1)
     }
 
     private var textColor: Color {
         if isActive { return Theme.onAccent }
+        if isPast { return Theme.inkFaint }
         if weekdayIndex == 0 { return Theme.sunday }
         if weekdayIndex == 6 { return Theme.saturday }
         return Theme.ink

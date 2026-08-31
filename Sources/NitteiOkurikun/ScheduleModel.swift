@@ -8,31 +8,39 @@ struct Slot: Identifiable, Equatable {
 }
 
 final class ScheduleModel: ObservableObject {
-    @Published var displayedMonth: Date   // 表示中の月の1日
+    @Published var weekStart: Date        // 表示範囲の先頭（日曜）
     @Published var activeDate: Date?      // 時刻選択中の日付
     @Published var pendingStart: Int?     // 開始時刻（選択途中）
     @Published var slots: [Slot] = []
 
     static let header = "以下の日程でご予定はいかがでしょうか。"
     static let weekdaySymbols = ["日", "月", "火", "水", "木", "金", "土"]
+    static let weeksShown = 4
 
-    let calendar: Calendar = {
+    static let sharedCalendar: Calendar = {
         var c = Calendar(identifier: .gregorian)
         c.locale = Locale(identifier: "ja_JP")
+        c.firstWeekday = 1   // 日曜始まり
         return c
     }()
 
+    var calendar: Calendar { Self.sharedCalendar }
+
     init() {
-        let now = Date()
-        displayedMonth = Calendar.current.date(
-            from: Calendar.current.dateComponents([.year, .month], from: now))!
+        weekStart = Self.sunday(of: Date())
     }
 
-    /// パネルを開くたびに「今日の月」へ戻す
+    /// その日を含む週の日曜 0:00
+    static func sunday(of date: Date) -> Date {
+        let cal = sharedCalendar
+        let day = cal.startOfDay(for: date)
+        let weekday = cal.component(.weekday, from: day)   // 日曜=1
+        return cal.date(byAdding: .day, value: -(weekday - 1), to: day)!
+    }
+
+    /// パネルを開くたびに「今日の週」へ戻す
     func prepareForOpen() {
-        let now = Date()
-        displayedMonth = calendar.date(
-            from: calendar.dateComponents([.year, .month], from: now))!
+        weekStart = Self.sunday(of: Date())
         activeDate = nil
         pendingStart = nil
     }
@@ -43,8 +51,31 @@ final class ScheduleModel: ObservableObject {
         pendingStart = nil
     }
 
-    func moveMonth(by offset: Int) {
-        displayedMonth = calendar.date(byAdding: .month, value: offset, to: displayedMonth)!
+    func moveWeeks(by offset: Int) {
+        weekStart = calendar.date(byAdding: .day, value: offset * 7, to: weekStart)!
+    }
+
+    /// 表示中の4週間ぶんの日付
+    var visibleDates: [Date] {
+        (0..<(Self.weeksShown * 7)).map {
+            calendar.date(byAdding: .day, value: $0, to: weekStart)!
+        }
+    }
+
+    func isPast(_ date: Date) -> Bool {
+        date < calendar.startOfDay(for: Date())
+    }
+
+    /// 「2026年8月」「2026年8月〜9月」など表示範囲のタイトル
+    var rangeTitle: String {
+        let end = calendar.date(byAdding: .day, value: Self.weeksShown * 7 - 1, to: weekStart)!
+        let y1 = calendar.component(.year, from: weekStart)
+        let m1 = calendar.component(.month, from: weekStart)
+        let y2 = calendar.component(.year, from: end)
+        let m2 = calendar.component(.month, from: end)
+        if y1 == y2 && m1 == m2 { return "\(y1)年\(m1)月" }
+        if y1 == y2 { return "\(y1)年\(m1)月〜\(m2)月" }
+        return "\(y1)年\(m1)月〜\(y2)年\(m2)月"
     }
 
     func selectDate(_ date: Date) {

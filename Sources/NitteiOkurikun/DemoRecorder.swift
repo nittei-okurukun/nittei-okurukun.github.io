@@ -123,8 +123,8 @@ enum DemoRecorder {
         }
 
         let cal = model.calendar
-        let d1 = cal.date(byAdding: .day, value: 9, to: model.displayedMonth)!
-        let d2 = cal.date(byAdding: .day, value: 18, to: model.displayedMonth)!
+        let d1 = cal.date(byAdding: .day, value: 9, to: model.weekStart)!
+        let d2 = cal.date(byAdding: .day, value: 18, to: model.weekStart)!
         if f == at(4.4) { model.selectDate(d1) }
         if f == at(5.0) { model.tapTime(10 * 60) }
         if f == at(5.8) { model.tapTime(11 * 60) }
