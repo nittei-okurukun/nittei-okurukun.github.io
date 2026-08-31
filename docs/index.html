@@ -125,27 +125,41 @@
     max-width: 620px; text-align: center;
   }
 
-  .goods { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; }
-  @media (max-width: 720px) { .goods { grid-template-columns: 1fr; } }
-  .good {
-    border-radius: 20px; padding: 26px 26px;
+  .install { max-width: 720px; margin: 0 auto; display: grid; gap: 18px; }
+  .way {
+    background: var(--card); border: 1px solid var(--hair); border-radius: 20px;
+    padding: 30px 32px; box-shadow: var(--shadow);
   }
-  .good:nth-child(1) { background: rgba(232, 96, 79, .09); }
-  .good:nth-child(2) { background: rgba(245, 184, 64, .12); }
-  .good:nth-child(3) { background: rgba(91, 141, 239, .10); }
-  .good:nth-child(4) { background: rgba(120, 180, 120, .12); }
-  .good h3 { font-size: 16px; font-weight: 700; margin-bottom: 8px; }
-  .good p { font-size: 13.5px; color: var(--faint); }
-  .good p strong { color: var(--ink); font-weight: 600; }
-
-  .dl { text-align: center; }
+  .way h3 { font-size: 17px; font-weight: 700; margin-bottom: 10px; }
+  .way > p { font-size: 13.5px; color: var(--faint); margin-bottom: 6px; }
+  .way ol { margin-top: 14px; padding-left: 0; list-style: none; counter-reset: li; }
+  .way ol li {
+    counter-increment: li; position: relative;
+    padding: 14px 0 14px 44px; font-size: 13.5px; color: var(--faint);
+  }
+  .way ol li + li { border-top: 1px solid var(--hair); }
+  .way ol li::before {
+    content: counter(li); position: absolute; left: 0; top: 16px;
+    width: 28px; height: 28px; border-radius: 50%;
+    background: var(--red); color: #fff;
+    font-weight: 800; font-size: 13px;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .way ol li strong { color: var(--ink); font-weight: 700; }
+  .way a { color: var(--red); font-weight: 600; }
+  .cmdrow { display: flex; gap: 10px; margin-top: 12px; align-items: stretch; }
   .code {
-    margin: 30px auto 0; background: var(--card); border: 1px solid var(--hair);
-    border-radius: 12px; padding: 16px 20px; overflow-x: auto; max-width: 720px;
-    text-align: left;
+    flex: 1; background: var(--bg); border: 1px solid var(--hair);
+    border-radius: 10px; padding: 12px 16px; overflow-x: auto;
   }
-  .code pre { font-family: ui-monospace, "SF Mono", Menlo, monospace; font-size: 12px; }
-  .note { margin: 16px auto 0; font-size: 12.5px; color: var(--faint); max-width: 620px; }
+  .code pre { font-family: ui-monospace, "SF Mono", Menlo, monospace; font-size: 11.5px; }
+  .copybtn {
+    flex: none; border: none; cursor: pointer;
+    background: var(--ink); color: var(--bg);
+    border-radius: 10px; padding: 0 18px;
+    font-size: 12.5px; font-weight: 700; font-family: inherit;
+  }
+  .copybtn:hover { opacity: .85; }
 
   footer {
     margin-top: 110px; border-top: 1px solid var(--hair);
@@ -162,7 +176,6 @@
     <span class="brand"><img src="img/appicon.png" alt="">日程送るくん</span>
     <span class="links">
       <a href="#how">つかいかた</a>
-      <a href="#good">いいところ</a>
       <a href="#download">ダウンロード</a>
       <a href="https://github.com/takumitakatani/nittei-okurukun">GitHub</a>
     </span>
@@ -228,39 +241,41 @@
     </p>
   </section>
 
-  <section id="good">
-    <h2 class="maru"><span class="dot">●</span> いいところ</h2>
-    <div class="goods">
-      <div class="good">
-        <h3>入力中だけ、反応する</h3>
-        <p>ホットキーが効くのは<strong>テキスト入力欄にいるときだけ</strong>。それ以外の⌃⌘Nはアプリにそのまま渡すので、ほかのショートカットを邪魔しません。</p>
-      </div>
-      <div class="good">
-        <h3>選択が消えない</h3>
-        <p>選んでいる途中でほかのアプリを見に行っても、パネルも選択も<strong>そのまま残ります</strong>。コピーすれば、最後にいた入力欄へ貼り付け。</p>
-      </div>
-      <div class="good">
-        <h3>キーボードにやさしい</h3>
-        <p><strong>Enterでコピー、Escで閉じる</strong>。ホットキーは好きな組み合わせに変更でき、ログイン時の自動起動にも対応しています。</p>
-      </div>
-      <div class="good">
-        <h3>ぜんぶローカル</h3>
-        <p>処理はMacの中だけで完結、<strong>ネットワーク通信はゼロ</strong>。予定の内容がどこかへ送られることはありません。ライト/ダークモードにも自動でなじみます。</p>
-      </div>
-    </div>
-  </section>
-
-  <section id="download" class="dl">
+  <section id="download">
     <h2 class="maru"><span class="dot">●</span> ダウンロード</h2>
-    <div class="cta" style="margin-top:0">
-      <a class="btn" href="https://github.com/takumitakatani/nittei-okurukun/releases/latest">無料でダウンロード</a>
+    <div class="install">
+      <div class="way">
+        <h3>かんたんインストール（おすすめ）</h3>
+        <p>ターミナルにコマンドを1行貼り付けるだけで、ダウンロードから起動まで自動で進みます。ターミナルを使ったことがなくても大丈夫です。</p>
+        <ol>
+          <li>
+            <strong>ターミナルを開く</strong><br>
+            キーボードで <kbd>⌘</kbd> + <kbd>スペース</kbd> を押して、「ターミナル」と入力してEnter。文字を打ち込む画面が開きます。
+          </li>
+          <li>
+            <strong>このコマンドをコピーして、ターミナルに貼り付けてEnter</strong>
+            <div class="cmdrow">
+              <div class="code"><pre id="cmd">curl -fsSL https://raw.githubusercontent.com/takumitakatani/nittei-okurukun/main/scripts/install.sh | zsh</pre></div>
+              <button class="copybtn" id="copybtn">コピー</button>
+            </div>
+          </li>
+          <li>
+            <strong>そのまま少し待つ</strong><br>
+            「インストール完了」と表示されて、アプリが自動で起動します。最初に開く設定画面の案内に沿って
+            アクセシビリティを許可すれば、<kbd>⌃⌘N</kbd> が使えるようになります。
+          </li>
+        </ol>
+      </div>
+      <div class="way">
+        <h3>zipでダウンロードする場合</h3>
+        <p>
+          <a href="https://github.com/takumitakatani/nittei-okurukun/releases/latest">こちらから最新版のzip</a>
+          をダウンロードして開き、出てきた「日程送るくん.app」を「アプリケーション」フォルダに移してから起動してください。<br>
+          初回に「開発元を確認できません」と出たときは、システム設定 → プライバシーとセキュリティ の下のほうにある
+          「このまま開く」を押すと起動できます。
+        </p>
+      </div>
     </div>
-    <div class="code"><pre>curl -fsSL https://raw.githubusercontent.com/takumitakatani/nittei-okurukun/main/scripts/install.sh | zsh</pre></div>
-    <p class="note">
-      ターミナルの1行インストールなら、ダウンロードから起動までそのまま進みます。
-      zipから手動で入れた場合は、初回のみ システム設定 → プライバシーとセキュリティ →「このまま開く」が必要なことがあります。
-      起動後、ホットキーのためにアクセシビリティの許可をお願いしています（用途は設定画面に書いてあります）。
-    </p>
   </section>
 
   <footer>
@@ -278,6 +293,16 @@
   addEventListener("visibilitychange", ensurePlay);
   addEventListener("click", ensurePlay);
   addEventListener("scroll", ensurePlay, { passive: true, once: true });
+
+  // インストールコマンドのコピーボタン
+  const copyBtn = document.getElementById("copybtn");
+  copyBtn.addEventListener("click", async () => {
+    try {
+      await navigator.clipboard.writeText(document.getElementById("cmd").textContent.trim());
+      copyBtn.textContent = "コピーしました";
+      setTimeout(() => { copyBtn.textContent = "コピー"; }, 2000);
+    } catch {}
+  });
 </script>
 </body>
 </html>
