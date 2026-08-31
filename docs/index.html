@@ -21,24 +21,8 @@
     --on-btn: #ffffff;
     --shadow: 0 10px 30px rgba(120, 100, 60, .10);
   }
-  @media (prefers-color-scheme: dark) {
-    :root {
-      --bg: #211f1a;
-      --card: #2c2a24;
-      --ink: #f1eee5;
-      --faint: #9a948a;
-      --hair: #3b382f;
-      --red: #f07463;
-      --yellow: #f0c05a;
-      --blue: #7ba4f2;
-      --marker: rgba(245, 200, 75, .30);
-      --btn: #f07463;
-      --on-btn: #2b1512;
-      --shadow: 0 10px 30px rgba(0, 0, 0, .35);
-    }
-  }
   * { margin: 0; padding: 0; box-sizing: border-box; }
-  html { scroll-behavior: smooth; }
+  html { scroll-behavior: smooth; color-scheme: light; }
   body {
     font-family: "Hiragino Sans", "Hiragino Kaku Gothic ProN", -apple-system, sans-serif;
     background: var(--bg); color: var(--ink);
@@ -100,11 +84,6 @@
   .demo video {
     width: 100%; display: block; border-radius: 18px;
     border: 1px solid var(--hair); box-shadow: var(--shadow);
-  }
-  .demo .dark-v { display: none; }
-  @media (prefers-color-scheme: dark) {
-    .demo .dark-v { display: block; }
-    .demo .light-v { display: none; }
   }
   .demo figcaption {
     margin-top: 14px; font-size: 12.5px; color: var(--faint); text-align: center;
@@ -209,10 +188,8 @@
   </header>
 
   <figure class="demo">
-    <video class="light-v" autoplay loop muted playsinline
+    <video autoplay loop muted playsinline
            src="img/demo-light.mp4" poster="img/demo-light-poster.png"></video>
-    <video class="dark-v" autoplay loop muted playsinline
-           src="img/demo-dark.mp4" poster="img/demo-dark-poster.png"></video>
     <figcaption>入力 → ⌃⌘N → 選ぶ → 貼り付く。実際の操作の流れです</figcaption>
   </figure>
 
