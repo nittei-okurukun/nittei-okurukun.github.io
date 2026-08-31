@@ -1,0 +1,176 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>日程送るくん — 候補日時をサッと選んで、そのまま送れる</title>
+<meta name="description" content="テキスト入力中に⌃⌘Nでカレンダーを開き、候補日時を選ぶだけで「以下の日程でご予定はいかがでしょうか。」の文面が完成するmacOSアプリ。">
+<style>
+  :root {
+    --bg: #f1f0ea;
+    --card: #ffffff;
+    --ink: #2e2e2e;
+    --faint: #8c8c88;
+    --accent: #1a1a1a;
+    --on-accent: #ffffff;
+    --border: #e0dfd9;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #1b1a18;
+      --card: #2a2926;
+      --ink: #edecE6;
+      --faint: #99978f;
+      --accent: #f5f3ee;
+      --on-accent: #1a1a1a;
+      --border: #47463f;
+    }
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    font-family: "Hiragino Sans", "Hiragino Kaku Gothic ProN", -apple-system, sans-serif;
+    background: var(--bg); color: var(--ink);
+    line-height: 1.8;
+    -webkit-font-smoothing: antialiased;
+  }
+  .wrap { max-width: 880px; margin: 0 auto; padding: 0 24px; }
+  header { padding: 96px 0 56px; text-align: center; }
+  h1 { font-size: 44px; letter-spacing: .02em; }
+  .tagline { margin-top: 12px; font-size: 16px; color: var(--faint); }
+  .cta { margin-top: 32px; display: flex; gap: 14px; justify-content: center; flex-wrap: wrap; align-items: center; }
+  .btn {
+    display: inline-block; background: var(--accent); color: var(--on-accent);
+    padding: 14px 40px; border-radius: 999px; text-decoration: none;
+    font-weight: 700; font-size: 15px; transition: opacity .15s;
+  }
+  .btn:hover { opacity: .82; }
+  .cta-note { font-size: 12px; color: var(--faint); width: 100%; }
+  kbd {
+    background: var(--card); border: 1px solid var(--border); border-bottom-width: 2px;
+    border-radius: 6px; padding: 2px 8px; font-family: inherit; font-size: .9em;
+  }
+  .shot { margin: 24px 0 72px; }
+  .shot img {
+    width: 100%; border-radius: 16px; display: block;
+    box-shadow: 0 24px 60px rgba(0,0,0,.14); border: 1px solid var(--border);
+  }
+  .shot img.dark { display: none; }
+  @media (prefers-color-scheme: dark) {
+    .shot img.dark { display: block; }
+    .shot img.light { display: none; }
+  }
+  section { padding: 0 0 72px; }
+  h2 { font-size: 22px; margin-bottom: 24px; text-align: center; }
+  .cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 16px; }
+  .card {
+    background: var(--card); border-radius: 16px; padding: 24px;
+    box-shadow: 0 4px 16px rgba(0,0,0,.05);
+  }
+  .card h3 { font-size: 15px; margin-bottom: 8px; }
+  .card p { font-size: 13px; color: var(--faint); }
+  .steps { counter-reset: step; max-width: 560px; margin: 0 auto; }
+  .step {
+    display: flex; gap: 16px; align-items: baseline;
+    background: var(--card); border-radius: 14px; padding: 18px 22px; margin-bottom: 12px;
+    box-shadow: 0 4px 16px rgba(0,0,0,.05); font-size: 14px;
+  }
+  .step::before {
+    counter-increment: step; content: counter(step);
+    flex: none; width: 24px; height: 24px; border-radius: 50%;
+    background: var(--accent); color: var(--on-accent);
+    font-size: 12px; font-weight: 700; display: flex;
+    align-items: center; justify-content: center; align-self: center;
+  }
+  .sample {
+    background: var(--card); border-radius: 16px; padding: 28px 32px;
+    max-width: 560px; margin: 0 auto; font-size: 14px;
+    box-shadow: 0 4px 16px rgba(0,0,0,.05);
+  }
+  .sample pre { font-family: inherit; white-space: pre-wrap; }
+  footer {
+    border-top: 1px solid var(--border);
+    padding: 32px 0 48px; text-align: center; font-size: 12px; color: var(--faint);
+  }
+  footer a { color: var(--faint); }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header>
+    <h1>日程送るくん</h1>
+    <p class="tagline">候補日時をサッと選んで、そのまま送れる文面に。<br>メールでもSlackでも、入力中に <kbd>⌃⌘N</kbd> を押すだけ。</p>
+    <div class="cta">
+      <a class="btn" href="#download">ダウンロード</a>
+      <p class="cta-note">macOS 13 Ventura 以降・無料・オープンソース</p>
+    </div>
+  </header>
+
+  <div class="shot">
+    <img class="light" src="img/ui-light.png" alt="日程送るくんのスクリーンショット（ライトモード）">
+    <img class="dark" src="img/ui-dark.png" alt="日程送るくんのスクリーンショット（ダークモード）">
+  </div>
+
+  <section>
+    <h2>できあがる文面</h2>
+    <div class="sample"><pre>以下の日程でご予定はいかがでしょうか。
+8月31日（月）　9:00〜12:00,14:00〜15:00
+9月1日（火）　12:00〜13:00
+9月10日（木）　9:30〜18:30</pre></div>
+  </section>
+
+  <section>
+    <h2>使い方は3ステップ</h2>
+    <div class="steps">
+      <div class="step">メールやチャットの入力欄で <kbd>⌃⌘N</kbd> を押す</div>
+      <div class="step">カレンダーで日付、時間チップで開始と終了をクリック（複数日OK）</div>
+      <div class="step">「コピーする」— 元のアプリにそのまま貼り付きます</div>
+    </div>
+  </section>
+
+  <section>
+    <h2>気の利く工夫</h2>
+    <div class="cards">
+      <div class="card">
+        <h3>入力中だけ反応</h3>
+        <p>テキスト入力欄にフォーカスがある時だけホットキーが発動。それ以外の⌃⌘Nはアプリにそのまま渡すので、他のショートカットを邪魔しません。</p>
+      </div>
+      <div class="card">
+        <h3>読みやすい文面を自動整形</h3>
+        <p>曜日つき・日ごとに改行・同じ日の複数時間帯は「,」区切り。冒頭のあいさつ文も自動で入ります。</p>
+      </div>
+      <div class="card">
+        <h3>今月からすぐ選べる</h3>
+        <p>開いた瞬間に今日の月が表示。ライト/ダークモードにも自動で追従します。</p>
+      </div>
+      <div class="card">
+        <h3>ぜんぶローカル</h3>
+        <p>処理はMacの中だけで完結。ネットワーク通信は一切行いません。ホットキーの変更やログイン時の自動起動も設定できます。</p>
+      </div>
+    </div>
+  </section>
+
+  <section id="download">
+    <h2>ダウンロード</h2>
+    <div class="cta">
+      <a class="btn" href="https://github.com/takumitakatani/nittei-okurukun/releases/latest">最新版をダウンロード</a>
+      <p class="cta-note">初回起動時にアクセシビリティの許可が必要です（ホットキー検知と自動貼り付けに使用）</p>
+    </div>
+    <div class="sample" style="margin-top:24px">
+      <p style="font-size:13px; margin-bottom:10px">ターミナルからの1行インストールが手軽です（ダウンロード〜起動まで自動）:</p>
+      <pre style="font-family:ui-monospace,monospace; font-size:12px; overflow-x:auto">curl -fsSL https://raw.githubusercontent.com/takumitakatani/nittei-okurukun/main/scripts/install.sh | zsh</pre>
+      <p style="font-size:12px; color:var(--faint); margin-top:10px">
+        zipから手動でインストールした場合、無署名アプリのため初回起動がブロックされることがあります。
+        システム設定 → プライバシーとセキュリティ → 「このまま開く」で起動できます。
+      </p>
+    </div>
+  </section>
+
+  <footer>
+    <p>© 2026 Takumi Takatani ・ <a href="https://github.com/takumitakatani/nittei-okurukun">GitHub</a> ・ MIT License</p>
+    <p>UIUXの参考: <a href="https://shirasaka.tv/ikano/">以下の日程でご都合いかがでしょうかメーカー</a></p>
+  </footer>
+
+</div>
+</body>
+</html>
