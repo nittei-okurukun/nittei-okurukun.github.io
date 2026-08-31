@@ -84,7 +84,7 @@ open /Applications/日程送るくん.app
 - **かんたん**: インストーラを1行で実行（ダウンロード〜隔離解除〜起動まで自動）
 
   ```sh
-  curl -fsSL https://raw.githubusercontent.com/takumitakatani/nittei-okurukun/main/scripts/install.sh | zsh
+  curl -fsSL https://raw.githubusercontent.com/nittei-okurukun/nittei-okurukun.github.io/main/scripts/install.sh | zsh
   ```
 
 - **手動**: zip を展開して /Applications へ → 起動が拒否されたら

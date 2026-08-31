@@ -2,10 +2,10 @@
 # 日程送るくん インストーラ（無署名配布のため、Gatekeeperの隔離属性を外してインストールする）
 #
 # 使い方:
-#   curl -fsSL https://raw.githubusercontent.com/takumitakatani/nittei-okurukun/main/scripts/install.sh | zsh
+#   curl -fsSL https://raw.githubusercontent.com/nittei-okurukun/nittei-okurukun.github.io/main/scripts/install.sh | zsh
 set -e
 
-REPO="takumitakatani/nittei-okurukun"
+REPO="nittei-okurukun/nittei-okurukun.github.io"
 URL="https://github.com/$REPO/releases/latest/download/nittei-okurukun.zip"
 TMP=$(mktemp -d)
 
