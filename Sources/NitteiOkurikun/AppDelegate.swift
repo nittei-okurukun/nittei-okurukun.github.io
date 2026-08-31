@@ -38,6 +38,19 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
            CommandLine.arguments.count > i + 1 {
             snapshotSettings(to: CommandLine.arguments[i + 1])
         }
+        if let i = CommandLine.arguments.firstIndex(of: "--record-demo"),
+           CommandLine.arguments.count > i + 1 {
+            let path = CommandLine.arguments[i + 1]
+            if CommandLine.arguments.contains("--dark") {
+                NSApp.appearance = NSAppearance(named: .darkAqua)
+            } else if CommandLine.arguments.contains("--light") {
+                NSApp.appearance = NSAppearance(named: .aqua)
+            }
+            DispatchQueue.main.async {
+                DemoRecorder.record(to: path)
+                NSApp.terminate(nil)
+            }
+        }
     }
 
     /// デバッグ用: 設定画面をPNGに書き出して終了
