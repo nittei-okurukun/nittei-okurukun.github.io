@@ -4,28 +4,37 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>日程送るくん</title>
-<meta name="description" content="日程調整の文面、3クリックで。入力中に⌃⌘N、カレンダーから選ぶだけ。macOSメニューバーアプリ。">
+<meta name="description" content="日程調整、3クリックでおわり。入力中に⌃⌘N、カレンダーから選ぶだけで候補日時の文面ができて、そのまま貼り付く。無料のmacOSアプリ。">
+<link rel="icon" href="img/appicon.png">
 <style>
   :root {
-    --bg: #f0efe9;
-    --surface: #ffffff;
-    --ink: #1a1917;
-    --faint: #8a887f;
-    --hair: #dcdad2;
-    --accent: #c8473d;
-    --btn: #1a1917;
-    --on-btn: #f5f4ee;
+    --bg: #fdfaf2;
+    --card: #ffffff;
+    --ink: #3b372e;
+    --faint: #9a948a;
+    --hair: #ece7da;
+    --red: #e8604f;
+    --yellow: #f5b840;
+    --blue: #5b8def;
+    --marker: rgba(245, 200, 75, .55);
+    --btn: #e8604f;
+    --on-btn: #ffffff;
+    --shadow: 0 10px 30px rgba(120, 100, 60, .10);
   }
   @media (prefers-color-scheme: dark) {
     :root {
-      --bg: #161512;
-      --surface: #201f1c;
-      --ink: #eceae2;
-      --faint: #8f8d84;
-      --hair: #35342f;
-      --accent: #e06055;
-      --btn: #f0efe9;
-      --on-btn: #1a1917;
+      --bg: #211f1a;
+      --card: #2c2a24;
+      --ink: #f1eee5;
+      --faint: #9a948a;
+      --hair: #3b382f;
+      --red: #f07463;
+      --yellow: #f0c05a;
+      --blue: #7ba4f2;
+      --marker: rgba(245, 200, 75, .30);
+      --btn: #f07463;
+      --on-btn: #2b1512;
+      --shadow: 0 10px 30px rgba(0, 0, 0, .35);
     }
   }
   * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -36,52 +45,61 @@
     line-height: 1.9; font-size: 15px;
     -webkit-font-smoothing: antialiased;
   }
-  .wrap { max-width: 1000px; margin: 0 auto; padding: 0 28px; }
+  .maru {
+    font-family: "Hiragino Maru Gothic ProN", "Hiragino Sans", sans-serif;
+  }
+  .wrap { max-width: 960px; margin: 0 auto; padding: 0 24px; }
 
   nav {
-    display: flex; justify-content: space-between; align-items: baseline;
-    padding: 28px 0 0;
+    display: flex; justify-content: space-between; align-items: center;
+    padding: 22px 0 0;
   }
-  nav .brand { font-weight: 800; font-size: 15px; letter-spacing: .04em; }
+  nav .brand { display: flex; align-items: center; gap: 10px; font-weight: 700; font-size: 15px; }
+  nav .brand img { width: 30px; height: 30px; border-radius: 8px; }
   nav .links a {
-    color: var(--faint); text-decoration: none; font-size: 13px; margin-left: 24px;
+    color: var(--faint); text-decoration: none; font-size: 13px; margin-left: 22px;
   }
   nav .links a:hover { color: var(--ink); }
 
-  header { padding: 110px 0 72px; }
-  .eyebrow {
-    font-size: 11px; letter-spacing: .22em; color: var(--faint);
-    margin-bottom: 28px;
-  }
+  header { padding: 88px 0 56px; text-align: center; }
   h1 {
-    font-size: clamp(40px, 7.2vw, 76px);
-    line-height: 1.28; letter-spacing: .01em; font-weight: 800;
+    font-size: clamp(34px, 6.4vw, 60px);
+    line-height: 1.5; font-weight: 800; letter-spacing: .01em;
   }
-  h1 .accent { color: var(--accent); }
+  mark {
+    background: linear-gradient(transparent 60%, var(--marker) 60%);
+    color: inherit; padding: 0 2px;
+  }
   .lede {
-    margin-top: 28px; max-width: 560px; font-size: 15.5px; color: var(--ink);
+    margin: 24px auto 0; max-width: 540px; font-size: 15.5px;
   }
-  .lede .faint { color: var(--faint); }
-  .cta { margin-top: 40px; display: flex; align-items: center; gap: 28px; flex-wrap: wrap; }
+  .badges { margin-top: 22px; display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; }
+  .badge {
+    font-size: 12px; color: var(--faint);
+    background: var(--card); border: 1px solid var(--hair);
+    border-radius: 999px; padding: 4px 14px;
+  }
+  .cta { margin-top: 34px; display: flex; align-items: center; justify-content: center; gap: 24px; flex-wrap: wrap; }
   .btn {
     background: var(--btn); color: var(--on-btn);
-    padding: 15px 44px; border-radius: 999px; text-decoration: none;
-    font-weight: 700; font-size: 14.5px; letter-spacing: .06em;
-    transition: transform .12s, opacity .12s;
+    padding: 15px 46px; border-radius: 999px; text-decoration: none;
+    font-weight: 700; font-size: 15px; letter-spacing: .04em;
+    box-shadow: 0 6px 18px rgba(232, 96, 79, .35);
+    transition: transform .12s, box-shadow .12s;
   }
-  .btn:hover { opacity: .85; transform: translateY(-1px); }
+  .btn:hover { transform: translateY(-2px); box-shadow: 0 10px 24px rgba(232, 96, 79, .4); }
   .ghost { color: var(--faint); text-decoration: none; font-size: 13.5px; border-bottom: 1px solid var(--hair); padding-bottom: 2px; }
   .ghost:hover { color: var(--ink); border-color: var(--ink); }
   kbd {
-    display: inline-block; font-family: inherit; font-size: .88em; font-weight: 700;
-    background: var(--surface); border: 1px solid var(--hair); border-bottom-width: 2px;
-    border-radius: 6px; padding: 1px 9px; vertical-align: baseline;
+    display: inline-block; font-family: inherit; font-size: .9em; font-weight: 700;
+    background: var(--card); border: 1px solid var(--hair); border-bottom-width: 2px;
+    border-radius: 6px; padding: 1px 9px;
   }
 
-  .demo { padding: 0 0 40px; }
+  .demo { padding: 8px 0 30px; }
   .demo video {
-    width: 100%; display: block; border-radius: 14px;
-    border: 1px solid var(--hair);
+    width: 100%; display: block; border-radius: 18px;
+    border: 1px solid var(--hair); box-shadow: var(--shadow);
   }
   .demo .dark-v { display: none; }
   @media (prefers-color-scheme: dark) {
@@ -89,58 +107,71 @@
     .demo .light-v { display: none; }
   }
   .demo figcaption {
-    margin-top: 14px; font-size: 12px; color: var(--faint); letter-spacing: .04em;
+    margin-top: 14px; font-size: 12.5px; color: var(--faint); text-align: center;
   }
 
-  section { padding: 96px 0 0; }
-  .label {
-    font-size: 11px; letter-spacing: .22em; color: var(--faint);
-    border-top: 1px solid var(--hair); padding-top: 20px; margin-bottom: 48px;
+  section { padding: 84px 0 0; }
+  h2 {
+    font-size: 24px; font-weight: 800; text-align: center; margin-bottom: 40px;
   }
+  h2 .dot { color: var(--red); }
 
-  .row {
-    display: grid; grid-template-columns: 120px 1fr; gap: 24px;
-    padding: 30px 0; border-bottom: 1px solid var(--hair);
-    align-items: baseline;
+  .steps { display: grid; grid-template-columns: repeat(3, 1fr); gap: 18px; }
+  @media (max-width: 720px) { .steps { grid-template-columns: 1fr; } }
+  .step {
+    background: var(--card); border: 1px solid var(--hair); border-radius: 20px;
+    padding: 28px 24px; box-shadow: var(--shadow);
   }
-  .row:first-of-type { border-top: 1px solid var(--hair); }
-  .row .num {
-    font-size: 30px; font-weight: 300; color: var(--faint);
-    font-variant-numeric: tabular-nums; letter-spacing: .05em;
+  .step .n {
+    width: 34px; height: 34px; border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    color: #fff; font-weight: 800; font-size: 15px; margin-bottom: 14px;
   }
-  .row h3 { font-size: 16.5px; font-weight: 700; margin-bottom: 6px; }
-  .row p { font-size: 13.5px; color: var(--faint); max-width: 560px; }
-  .row p strong { color: var(--ink); font-weight: 600; }
-  @media (max-width: 640px) {
-    .row { grid-template-columns: 56px 1fr; gap: 16px; }
-    .row .num { font-size: 20px; }
-  }
+  .step:nth-child(1) .n { background: var(--red); }
+  .step:nth-child(2) .n { background: var(--yellow); }
+  .step:nth-child(3) .n { background: var(--blue); }
+  .step h3 { font-size: 16.5px; font-weight: 700; margin-bottom: 8px; }
+  .step p { font-size: 13.5px; color: var(--faint); }
+  .step p strong { color: var(--ink); font-weight: 600; }
 
   .output {
-    background: var(--surface); border: 1px solid var(--hair); border-radius: 14px;
-    padding: 36px 40px; max-width: 640px;
+    background: var(--card); border: 1px solid var(--hair); border-radius: 20px;
+    padding: 34px 38px; max-width: 620px; margin: 0 auto; box-shadow: var(--shadow);
   }
   .output pre {
-    font-family: inherit; white-space: pre-wrap; font-size: 14.5px; line-height: 2.1;
+    font-family: inherit; white-space: pre-wrap; font-size: 14.5px; line-height: 2.15;
   }
-  .output pre .head { color: var(--faint); }
-  .output-note { margin-top: 16px; font-size: 12.5px; color: var(--faint); max-width: 640px; }
+  .output-note {
+    margin: 18px auto 0; font-size: 13px; color: var(--faint);
+    max-width: 620px; text-align: center;
+  }
 
-  .dl-block { max-width: 640px; }
-  .dl-block .cta { margin-top: 0; }
+  .goods { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; }
+  @media (max-width: 720px) { .goods { grid-template-columns: 1fr; } }
+  .good {
+    border-radius: 20px; padding: 26px 26px;
+  }
+  .good:nth-child(1) { background: rgba(232, 96, 79, .09); }
+  .good:nth-child(2) { background: rgba(245, 184, 64, .12); }
+  .good:nth-child(3) { background: rgba(91, 141, 239, .10); }
+  .good:nth-child(4) { background: rgba(120, 180, 120, .12); }
+  .good h3 { font-size: 16px; font-weight: 700; margin-bottom: 8px; }
+  .good p { font-size: 13.5px; color: var(--faint); }
+  .good p strong { color: var(--ink); font-weight: 600; }
+
+  .dl { text-align: center; }
   .code {
-    margin-top: 28px; background: var(--surface); border: 1px solid var(--hair);
-    border-radius: 10px; padding: 16px 20px; overflow-x: auto;
+    margin: 30px auto 0; background: var(--card); border: 1px solid var(--hair);
+    border-radius: 12px; padding: 16px 20px; overflow-x: auto; max-width: 720px;
+    text-align: left;
   }
   .code pre { font-family: ui-monospace, "SF Mono", Menlo, monospace; font-size: 12px; }
-  .note { margin-top: 14px; font-size: 12.5px; color: var(--faint); }
-  .note a { color: var(--faint); }
+  .note { margin: 16px auto 0; font-size: 12.5px; color: var(--faint); max-width: 620px; }
 
   footer {
-    margin-top: 120px; border-top: 1px solid var(--hair);
-    padding: 28px 0 56px; display: flex; justify-content: space-between;
-    flex-wrap: wrap; gap: 12px;
-    font-size: 12px; color: var(--faint);
+    margin-top: 110px; border-top: 1px solid var(--hair);
+    padding: 26px 0 52px; text-align: center;
+    font-size: 12.5px; color: var(--faint);
   }
   footer a { color: var(--faint); }
 </style>
@@ -149,25 +180,30 @@
 <div class="wrap">
 
   <nav>
-    <span class="brand">日程送るくん</span>
+    <span class="brand"><img src="img/appicon.png" alt="">日程送るくん</span>
     <span class="links">
-      <a href="#how">使い方</a>
-      <a href="#craft">こだわり</a>
+      <a href="#how">つかいかた</a>
+      <a href="#good">いいところ</a>
       <a href="#download">ダウンロード</a>
       <a href="https://github.com/takumitakatani/nittei-okurukun">GitHub</a>
     </span>
   </nav>
 
   <header>
-    <p class="eyebrow">MACOS MENU BAR APP — FREE &amp; OPEN SOURCE</p>
-    <h1>日程調整の文面、<br>3クリックで<span class="accent">。</span></h1>
+    <h1 class="maru">日程調整、<br><mark>3クリック</mark>でおわり。</h1>
     <p class="lede">
-      メールを書く手を止めない。入力中に <kbd>⌃⌘N</kbd>、カレンダーから選ぶだけで、
-      曜日つき・整形済みの候補日時がその場に貼り付く。<br>
-      <span class="faint">コピー、切り替え、打ち直し。日程調整のたびに繰り返してきた往復を、なくすための道具です。</span>
+      メールを書きながら <kbd>⌃⌘N</kbd>。カレンダーから選ぶだけで、
+      候補日時の文面ができあがって、そのまま貼り付く。<br>
+      コピーして、切り替えて、打ち直して……の往復とはさようなら。
     </p>
+    <div class="badges">
+      <span class="badge">macOS 13以降</span>
+      <span class="badge">無料</span>
+      <span class="badge">オープンソース</span>
+      <span class="badge">通信なし・ぜんぶローカル</span>
+    </div>
     <div class="cta">
-      <a class="btn" href="#download">ダウンロード</a>
+      <a class="btn" href="#download">無料でダウンロード</a>
       <a class="ghost" href="https://github.com/takumitakatani/nittei-okurukun">ソースコードを見る</a>
     </div>
   </header>
@@ -177,99 +213,81 @@
            src="img/demo-light.mp4" poster="img/demo-light-poster.png"></video>
     <video class="dark-v" autoplay loop muted playsinline
            src="img/demo-dark.mp4" poster="img/demo-dark-poster.png"></video>
-    <figcaption>入力 → ⌃⌘N → 選ぶ → 貼り付く。実際の操作の流れ（ライト/ダークは自動追従）</figcaption>
+    <figcaption>入力 → ⌃⌘N → 選ぶ → 貼り付く。実際の操作の流れです</figcaption>
   </figure>
 
   <section id="how">
-    <p class="label">使い方 — HOW IT WORKS</p>
-    <div class="row">
-      <span class="num">01</span>
-      <div>
+    <h2 class="maru"><span class="dot">●</span> つかいかた</h2>
+    <div class="steps">
+      <div class="step">
+        <span class="n">1</span>
         <h3>入力欄で ⌃⌘N</h3>
-        <p>メールでもSlackでもメモでも。<strong>テキストを打っている、その場所で</strong>呼び出せます。アプリを切り替える必要はありません。</p>
+        <p>メールでもSlackでもメモでも。<strong>文章を打っているその場所で</strong>呼び出せます。アプリの切り替えはいりません。</p>
       </div>
-    </div>
-    <div class="row">
-      <span class="num">02</span>
-      <div>
+      <div class="step">
+        <span class="n">2</span>
         <h3>日付 → 開始 → 終了</h3>
-        <p>クリック3回で1枠。カレンダーは<strong>開いた瞬間から今月</strong>。複数の日、同じ日の複数の時間帯も、そのまま続けて選べます。</p>
+        <p>クリック3回で1枠。カレンダーは<strong>開いた瞬間から今月</strong>。複数の日も、同じ日の複数の時間帯も、続けて選べます。</p>
       </div>
-    </div>
-    <div class="row">
-      <span class="num">03</span>
-      <div>
+      <div class="step">
+        <span class="n">3</span>
         <h3>コピーする</h3>
-        <p>クリップボードへのコピーと同時に、<strong>元のアプリへ自動で貼り付け</strong>。カーソルは書きかけの文章の続きにいます。</p>
+        <p>コピーと同時に、<strong>元のアプリへ自動で貼り付け</strong>。カーソルは書きかけの文章の続きにいます。</p>
       </div>
     </div>
   </section>
 
   <section>
-    <p class="label">できあがる文面 — OUTPUT</p>
+    <h2 class="maru"><span class="dot">●</span> できあがる文面</h2>
     <div class="output">
-      <pre><span class="head">以下の日程でご予定はいかがでしょうか。</span>
+      <pre>以下の日程でご予定はいかがでしょうか。
 8月31日（月）　9:00〜12:00,14:00〜15:00
 9月1日（火）　12:00〜13:00
 9月10日（木）　9:30〜18:30</pre>
     </div>
     <p class="output-note">
-      あいさつ文、曜日、日ごとの改行、同じ日の「,」区切り。
-      送る前に手で直すところが残らないよう、整形はすべてアプリが引き受けます。
+      あいさつ文、曜日、日ごとの改行、同じ日の「,」区切り。<br>
+      送る前に手で直すところが残らないよう、整形はぜんぶアプリにおまかせ。
     </p>
   </section>
 
-  <section id="craft">
-    <p class="label">道具としてのこだわり — CRAFT</p>
-    <div class="row">
-      <span class="num">—</span>
-      <div>
+  <section id="good">
+    <h2 class="maru"><span class="dot">●</span> いいところ</h2>
+    <div class="goods">
+      <div class="good">
         <h3>入力中だけ、反応する</h3>
-        <p>ホットキーが発動するのは<strong>テキスト入力欄にフォーカスがある時だけ</strong>。それ以外の⌃⌘Nは元のアプリにそのまま渡すので、他のショートカットを一切邪魔しません。</p>
+        <p>ホットキーが効くのは<strong>テキスト入力欄にいるときだけ</strong>。それ以外の⌃⌘Nはアプリにそのまま渡すので、ほかのショートカットを邪魔しません。</p>
       </div>
-    </div>
-    <div class="row">
-      <span class="num">—</span>
-      <div>
-        <h3>迷う操作を削る</h3>
-        <p>日付→開始→終了、以外の操作はありません。<strong>Enterでコピー、Escで閉じる</strong>。他のアプリを見に行っても選択は消えず、コピーすれば最後にいた入力欄へ貼り付きます。間違えた枠は×でひとつずつ消せます。</p>
+      <div class="good">
+        <h3>選択が消えない</h3>
+        <p>選んでいる途中でほかのアプリを見に行っても、パネルも選択も<strong>そのまま残ります</strong>。コピーすれば、最後にいた入力欄へ貼り付け。</p>
       </div>
-    </div>
-    <div class="row">
-      <span class="num">—</span>
-      <div>
-        <h3>すべてローカル</h3>
-        <p>処理はMacの中だけで完結し、<strong>ネットワーク通信はゼロ</strong>。予定の内容がどこかに送られることはありません。ソースコードも公開しています。</p>
+      <div class="good">
+        <h3>キーボードにやさしい</h3>
+        <p><strong>Enterでコピー、Escで閉じる</strong>。ホットキーは好きな組み合わせに変更でき、ログイン時の自動起動にも対応しています。</p>
       </div>
-    </div>
-    <div class="row">
-      <span class="num">—</span>
-      <div>
-        <h3>環境になじむ</h3>
-        <p>ライト/ダークモードに自動追従。ホットキーは好みの組み合わせに変更でき、ログイン時の自動起動にも対応。メニューバーに静かにいるだけの常駐アプリです。</p>
+      <div class="good">
+        <h3>ぜんぶローカル</h3>
+        <p>処理はMacの中だけで完結、<strong>ネットワーク通信はゼロ</strong>。予定の内容がどこかへ送られることはありません。ライト/ダークモードにも自動でなじみます。</p>
       </div>
     </div>
   </section>
 
-  <section id="download">
-    <p class="label">ダウンロード — DOWNLOAD</p>
-    <div class="dl-block">
-      <div class="cta">
-        <a class="btn" href="https://github.com/takumitakatani/nittei-okurukun/releases/latest">最新版を入手</a>
-        <span class="ghost" style="border:none">macOS 13 Ventura 以降・無料</span>
-      </div>
-      <div class="code"><pre>curl -fsSL https://raw.githubusercontent.com/takumitakatani/nittei-okurukun/main/scripts/install.sh | zsh</pre></div>
-      <p class="note">
-        ターミナルの1行インストールなら、ダウンロードから起動までそのまま進みます。
-        zipから手動で入れた場合は、初回のみ システム設定 → プライバシーとセキュリティ →「このまま開く」が必要なことがあります。
-        起動後、ホットキーのためにアクセシビリティの許可をお願いしています（用途は設定画面に明記）。
-      </p>
+  <section id="download" class="dl">
+    <h2 class="maru"><span class="dot">●</span> ダウンロード</h2>
+    <div class="cta" style="margin-top:0">
+      <a class="btn" href="https://github.com/takumitakatani/nittei-okurukun/releases/latest">無料でダウンロード</a>
     </div>
+    <div class="code"><pre>curl -fsSL https://raw.githubusercontent.com/takumitakatani/nittei-okurukun/main/scripts/install.sh | zsh</pre></div>
+    <p class="note">
+      ターミナルの1行インストールなら、ダウンロードから起動までそのまま進みます。
+      zipから手動で入れた場合は、初回のみ システム設定 → プライバシーとセキュリティ →「このまま開く」が必要なことがあります。
+      起動後、ホットキーのためにアクセシビリティの許可をお願いしています（用途は設定画面に書いてあります）。
+    </p>
   </section>
 
   <footer>
-    <span>© 2026 Takumi Takatani ・ <a href="https://github.com/takumitakatani/nittei-okurukun/blob/main/LICENSE">MIT License</a></span>
-    <span>UIUXの参考: <a href="https://shirasaka.tv/ikano/">以下の日程でご都合いかがでしょうかメーカー</a></span>
+    © 2026 Takumi Takatani ・ <a href="https://github.com/takumitakatani/nittei-okurukun/blob/main/LICENSE">MITライセンス</a> ・ <a href="https://github.com/takumitakatani/nittei-okurukun">GitHub</a>
   </footer>
 
 </div>
