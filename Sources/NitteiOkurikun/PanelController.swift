@@ -53,8 +53,9 @@ final class PanelController: NSObject, NSWindowDelegate {
 
     func contentViewForSnapshot() -> NSView? { panel.contentView }
 
-    // パネルがキーでなくなったら閉じる（ポップアップらしい挙動）
-    func windowDidResignKey(_ notification: Notification) {
-        panel.orderOut(nil)
+    /// すでに開いているパネルを前面に戻す
+    func bringToFront() {
+        NSApp.activate(ignoringOtherApps: true)
+        panel.makeKeyAndOrderFront(nil)
     }
 }

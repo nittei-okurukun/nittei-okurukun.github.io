@@ -21,6 +21,11 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         hotKeyTap.onHotKey = { [weak self] in self?.openFromHotKey() }
         hotKeyTap.start()
 
+        // パネルを開いたまま他アプリへ移動しても、最後にいたアプリへ貼り付けられるよう追跡する
+        NSWorkspace.shared.notificationCenter.addObserver(
+            self, selector: #selector(frontAppChanged(_:)),
+            name: NSWorkspace.didActivateApplicationNotification, object: nil)
+
         // 初回起動、または権限が未許可なら設定（オンボーディング）を表示
         if !Prefs.didOnboard || !AXIsProcessTrusted() {
             Prefs.didOnboard = true
@@ -133,8 +138,19 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         settingsController.show()
     }
 
+    @objc private func frontAppChanged(_ notification: Notification) {
+        guard let app = notification.userInfo?[NSWorkspace.applicationUserInfoKey]
+                as? NSRunningApplication,
+              app.processIdentifier != ProcessInfo.processInfo.processIdentifier
+        else { return }
+        previousApp = app
+    }
+
     private func openFromHotKey() {
-        guard !panelController.isVisible else { return }
+        guard !panelController.isVisible else {
+            panelController.bringToFront()
+            return
+        }
         previousApp = NSWorkspace.shared.frontmostApplication
         panelController.show()
     }
