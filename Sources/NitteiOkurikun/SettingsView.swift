@@ -56,9 +56,7 @@ struct SettingsView: View {
                 VStack(alignment: .leading, spacing: 8) {
                     Text("使い方").font(.system(size: 12, weight: .bold))
                         .foregroundStyle(Theme.inkFaint)
-                    step("1", model.hotKeyDisplay.hasSuffix("N")
-                         ? "メールやチャットの入力欄で \(model.hotKeyDisplay) を押す（Nは日程のN）"
-                         : "メールやチャットの入力欄で \(model.hotKeyDisplay) を押す")
+                    step("1", hotKeyStepText)
                     step("2", "日付 → 開始 → 終了の順にクリック（複数日OK）")
                     step("3", "「コピーする」で元のアプリにそのまま貼り付け")
                 }
@@ -144,6 +142,16 @@ struct SettingsView: View {
         .frame(width: 420)
         .background(Theme.background)
         .onDisappear { stopRecording() }
+    }
+
+    private var hotKeyStepText: String {
+        if model.hotKeyDisplay == "⌃⌘N" {
+            return "入力欄で control + ⌘ + N を押す（Nは日程のN）"
+        }
+        if model.hotKeyDisplay.hasSuffix("N") {
+            return "入力欄で \(model.hotKeyDisplay) を押す（Nは日程のN）"
+        }
+        return "入力欄で \(model.hotKeyDisplay) を押す"
     }
 
     private func step(_ n: String, _ text: String) -> some View {
