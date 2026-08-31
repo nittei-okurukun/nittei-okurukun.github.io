@@ -59,8 +59,8 @@ cp -R dist/日程送るくん.app /Applications/
 open /Applications/日程送るくん.app
 ```
 
-ad-hoc 署名のため、リビルドするたびにアクセシビリティの再許可が必要です:
-`tccutil reset Accessibility jp.teamx.nittei-okurikun` → アプリ再起動 → 再許可。
+署名は自己署名証明書「NitteiOkurikun Dev」で固定しているため、リビルドしてもアクセシビリティ許可は保持されます（証明書がないマシンでは ad-hoc 署名にフォールバックし、その場合はリビルド毎に再許可が必要:
+`tccutil reset Accessibility jp.teamx.nittei-okurikun` → アプリ再起動 → 再許可）。
 
 ### アプリアイコンの差し替え
 
